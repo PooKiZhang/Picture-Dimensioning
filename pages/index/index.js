@@ -14,7 +14,7 @@ Page({
     imgWidth: 0,
     imgHeight: 0,
 
-    // UI State
+    // UI State12
     showInput: false,
     inputText: '',
     editingLineId: null,
