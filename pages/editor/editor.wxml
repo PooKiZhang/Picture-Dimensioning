@@ -1,0 +1,344 @@
+<view class="container">
+  <!-- Gesture Area: Handles Zoom/Pan/Rotate for the image container -->
+    <view class="gesture-area" 
+          bindtouchstart="onTouchStart" 
+          bindtouchmove="onTouchMove" 
+          bindtouchend="onTouchEnd"
+          catchtap="onBackgroundTap">
+      
+      <!-- Transform Container: Holds Image and Lines. 
+           We apply CSS transform here so lines stick to image. -->
+      <view class="transform-container" 
+            style="transform: translate({{imgX}}px, {{imgY}}px) scale({{imgScale}}) rotate({{imgAngle}}deg); width:{{imgWidth}}px; height:{{imgHeight}}px;">
+        
+        <!-- The Image -->
+        <image class="target-image" src="{{imagePath}}" mode="aspectFit" style="width:100%; height:100%;"></image>
+
+        <!-- Lines Layer -->
+        <block wx:for="{{lines}}" wx:key="id">
+          <!-- Line Group -->
+          <view class="line-group {{item.isSelected ? 'selected' : ''}}">
+            
+            <!-- Standard Line -->
+            <view class="visual-line" wx:if="{{item.type !== 'leader' && item.type !== 'text-tag' && item.type !== 'auto-tag'}}"
+                  style="left:{{item.left}}px; top:{{item.top}}px; width:{{item.length}}px; transform: rotate({{item.angle}}deg);"
+                  catchtouchstart="onLineTouchStart"
+                  catchtouchmove="onLineTouchMove"
+                  catchtouchend="onLineTouchEnd"
+                  data-id="{{item.id}}">
+              
+              <!-- 1. Hit Area (Transparent, larger touch target) -->
+              <view class="hit-area"></view>
+
+              <!-- Dynamic Arrow Start -->
+              <view class="arrow start" 
+                    style="border-right-color: {{item.color}}; border-width: {{item.strokeWidth * 3}}px {{item.strokeWidth * 5}}px {{item.strokeWidth * 3}}px 0;"></view>
+              
+              <!-- Dynamic Line Stroke -->
+              <view class="line-stroke" 
+                    style="background-color: {{item.color}}; height: {{item.strokeWidth}}px;"></view>
+              
+              <!-- Dynamic Arrow End -->
+              <view class="arrow end" 
+                    style="border-left-color: {{item.color}}; border-width: {{item.strokeWidth * 3}}px 0 {{item.strokeWidth * 3}}px {{item.strokeWidth * 5}}px;"></view>
+              
+              <!-- Tag (Parallel to line) -->
+              <view class="line-tag {{item.isFlipped ? 'flipped' : ''}}" 
+                    style="{{item.tagStyle}} font-size: {{item.fontSize}}px;">
+                {{item.text}}
+              </view>
+            </view>
+
+            <!-- Leader Line -->
+            <view class="leader-group-container" wx:if="{{item.type === 'leader'}}"
+                  catchtouchstart="onLineTouchStart"
+                  catchtouchmove="onLineTouchMove"
+                  catchtouchend="onLineTouchEnd"
+                  data-id="{{item.id}}">
+              
+              <!-- Diagonal Line (A to B) using transform -->
+              <view class="leader-diagonal"
+                    style="left:{{item.diagLeft}}px; top:{{item.diagTop}}px; width:{{item.diagLen}}px; height:{{item.strokeWidth}}px; transform: rotate({{item.diagAngle}}deg); background-color: {{item.color}};"
+                    catchtouchstart="onLineTouchStart"
+                    catchtouchmove="onLineTouchMove"
+                    catchtouchend="onLineTouchEnd"
+                    data-id="{{item.id}}">
+              </view>
+
+              <!-- Text Platform (Horizontal at B) -->
+              <!-- Positioned at B (item.bx, item.by) -->
+              <!-- If B > A (Right): Text flows right. If B < A (Left): Text flows left (transform -100%) -->
+              <view class="leader-text-wrapper" 
+                    style="left:{{item.bx}}px; top:{{item.by}}px; transform: translate({{item.textTranslateX}}, {{item.textTranslateY}});">
+                
+                <!-- The Text and Underline -->
+                <view class="leader-tag" 
+                      style="font-size: {{item.fontSize}}px;">
+                  <text>{{item.text}}</text>
+                </view>
+              </view>
+
+              <!-- Anchor A (Circle) -->
+               <!-- Using existing anchor logic if selected, BUT we also need a visual anchor always? User image shows hollow circle. -->
+               <!-- The 'anchor-circle' below is for controls. Let's add a visual anchor for leader line. -->
+               <view class="leader-anchor-dot" 
+                     style="left:{{item.ax}}px; top:{{item.ay}}px; border-color: {{item.color}}; width: {{item.strokeWidth * 3 + 4}}px; height: {{item.strokeWidth * 3 + 4}}px; border-width: {{item.strokeWidth}}px;"
+                     catchtouchstart="onLineTouchStart"
+                     catchtouchmove="onLineTouchMove"
+                     catchtouchend="onLineTouchEnd"
+                     data-id="{{item.id}}">
+               </view>
+
+            </view>
+
+            <!-- Text Tag -->
+            <view class="text-tag-container" wx:if="{{item.type === 'text-tag'}}"
+                  catchtouchstart="onLineTouchStart"
+                  catchtouchmove="onLineTouchMove"
+                  catchtouchend="onLineTouchEnd"
+                  data-id="{{item.id}}">
+              
+              <!-- Text Box with Background -->
+              <view class="text-tag-box" 
+                    style="left:{{item.ax}}px; top:{{item.ay}}px; width:{{item.boxWidth}}px; height:{{item.boxHeight}}px; text-align:{{item.textAlign}}; font-size:{{item.fontSize}}px; color:{{item.color}}; justify-content:{{item.textAlign === 'left' ? 'flex-start' : (item.textAlign === 'right' ? 'flex-end' : 'center')}};"
+                    catchtouchstart="onLineTouchStart"
+                    catchtouchmove="onLineTouchMove"
+                    catchtouchend="onLineTouchEnd"
+                    data-id="{{item.id}}">
+                <!-- Background layer -->
+                <view class="text-tag-bg" style="background-color:{{item.bgColor}}; opacity:{{item.bgOpacity}};"></view>
+                <!-- Text layer -->
+                <text class="text-tag-content">{{item.text}}</text>
+              </view>
+
+            </view>
+
+            <!-- Text Tag -->
+            <view class="text-tag-container" wx:if="{{item.type === 'text-tag'}}"
+                  catchtouchstart="onLineTouchStart"
+                  catchtouchmove="onLineTouchMove"
+                  catchtouchend="onLineTouchEnd"
+                  data-id="{{item.id}}">
+              
+              <!-- Text Box with Background (Fixed/Resizable) -->
+              <view class="text-tag-box" 
+                    style="left:{{item.ax}}px; top:{{item.ay}}px; width:{{item.boxWidth}}px; height:{{item.boxHeight}}px; text-align:{{item.textAlign}}; font-size:{{item.fontSize}}px; color:{{item.color}}; justify-content:{{item.textAlign === 'left' ? 'flex-start' : (item.textAlign === 'right' ? 'flex-end' : 'center')}};"
+                    catchtouchstart="onLineTouchStart"
+                    catchtouchmove="onLineTouchMove"
+                    catchtouchend="onLineTouchEnd"
+                    data-id="{{item.id}}">
+                <!-- Background layer -->
+                <view class="text-tag-bg" style="background-color:{{item.bgColor}}; opacity:{{item.bgOpacity}};"></view>
+                <!-- Text layer -->
+                <text class="text-tag-content">{{item.text}}</text>
+              </view>
+
+            </view>
+
+             <!-- Auto Tag (New adaptive width tag) -->
+             <view class="auto-tag-container" wx:if="{{item.type === 'auto-tag'}}"
+                   catchtouchstart="onLineTouchStart"
+                   catchtouchmove="onLineTouchMove"
+                   catchtouchend="onLineTouchEnd"
+                   data-id="{{item.id}}">
+                
+                <!-- Auto-sized box centered at ax, ay -->
+                <view class="auto-tag-box" style="transform: translate(-50%, -50%); left:{{item.ax}}px; top:{{item.ay}}px; font-size:{{item.fontSize}}px; color:{{item.color}};"
+                      catchtouchstart="onLineTouchStart"
+                      catchtouchmove="onLineTouchMove"
+                      catchtouchend="onLineTouchEnd"
+                      data-id="{{item.id}}">
+                   <view class="auto-tag-dot"></view>
+                   <view class="text-tag-bg" style="background-color:{{item.bgColor}}; opacity:{{item.bgOpacity}}; border-radius:4px;"></view>
+                   <text class="auto-tag-content" style="text-align:{{item.textAlign}};">{{item.text}}</text>
+                </view>
+
+             </view>
+
+            <!-- Control Anchors (Only visible when selected) -->
+            <block wx:if="{{item.isSelected}}">
+              <!-- Start Anchor (A) -->
+              <view class="anchor-circle" wx:if="{{item.type !== 'auto-tag'}}"
+                    style="left:{{item.ax}}px; top:{{item.ay}}px;"
+                    catchtouchstart="onAnchorStart"
+                    catchtouchmove="onAnchorMove"
+                    catchtouchend="onAnchorEnd"
+                    data-type="a"
+                    data-id="{{item.id}}">
+              </view>
+
+              <!-- End Anchor (B) - Only for types that resize (Rectangle/TextTag, Leader, Standard) -->
+              <!-- Auto-tag does NOT have resize anchor B -->
+              <view class="anchor-circle" wx:if="{{item.type !== 'auto-tag'}}"
+                    style="left:{{item.bx}}px; top:{{item.by}}px;"
+                    catchtouchstart="onAnchorStart"
+                    catchtouchmove="onAnchorMove"
+                    catchtouchend="onAnchorEnd"
+                    data-type="b"
+                    data-id="{{item.id}}">
+              </view>
+            </block>
+
+          </view>
+        </block>
+
+      </view> <!-- End Transform Container -->
+    </view>
+
+    <!-- UI Overlay (Fixed Controls) -->
+    <view class="ui-overlay" wx:if="{{!hasSelection}}">
+      <view class="overlay-buttons">
+        <view class="btn-action btn-add" bindtap="onAddLine">
+          <image class="btn-icon" src="/move-horizontal.svg"></image>
+          <text class="btn-text">尺寸</text>
+        </view>
+        <view class="btn-action btn-leader" bindtap="onAddLeaderLine">
+          <image class="btn-icon" src="/path.svg"></image>
+          <text class="btn-text">引出</text>
+        </view>
+        <view class="btn-action btn-text-tag" bindtap="onAddTextTag">
+          <!-- Rectangle Icon (CSS) -->
+          <view class="btn-icon" style="border: 2px solid #fff; width: 18px; height: 18px; border-radius: 2px; box-sizing: border-box;"></view>
+          <text class="btn-text">矩形</text>
+        </view>
+        <view class="btn-action btn-auto-tag" bindtap="onAddAutoTag">
+          <image class="btn-icon" src="/tag.svg"></image>
+          <text class="btn-text">标签</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- Magnifier (Visible when dragging anchor) -->
+    <view class="magnifier" wx:if="{{showMagnifier}}" style="left:{{magX}}px; top:{{magY}}px;">
+      <image class="magnifier-img" 
+             src="{{imagePath}}" 
+             style="width:{{imgWidth}}px; height:{{imgHeight}}px; transform: translate({{magImgTx}}px, {{magImgTy}}px) scale({{magImgScale}}) rotate({{magImgAngle}}deg);">
+      </image>
+    </view>
+
+    <!-- Bottom Edit Toolbar (Visible when selected) -->
+    <view class="edit-toolbar" wx:if="{{hasSelection}}">
+      
+      <!-- Tag Edit -->
+      <view class="tool-section">
+        <text class="tool-label">{{selectedLineType === 'text-tag' || selectedLineType === 'auto-tag' ? '内容' : (selectedLineType === 'leader' ? '内容' : '数值')}}</text>
+        <view class="input-group">
+          <!-- Note: Dynamic Type binding might not work with replace_file_content if I don't see the context. I'll assume I can edit it. -->
+           <!-- Actually I already passed the type edit in previous JS execution? No, I need to do it here in WXML -->
+          <input class="tag-input" 
+                 type="{{selectedLineType === 'leader' || selectedLineType === 'text-tag' || selectedLineType === 'auto-tag' ? 'text' : 'number'}}" 
+                 value="{{tagValue}}" 
+                 placeholder="请输入" 
+                 bindinput="onTagValueInput" 
+                 maxlength="{{selectedLineType === 'auto-tag' ? 25 : -1}}"/>
+          
+          <!-- Unit Toggle (Hide for Leader and Text-Tag) -->
+          <view class="unit-toggle" wx:if="{{selectedLineType !== 'leader' && selectedLineType !== 'text-tag' && selectedLineType !== 'auto-tag'}}">
+            <view class="unit-btn {{tagUnit === 'mm' ? 'active' : ''}}" bindtap="onSetUnit" data-unit="mm">mm</view>
+            <view class="unit-btn {{tagUnit === 'cm' ? 'active' : ''}}" bindtap="onSetUnit" data-unit="cm">cm</view>
+          </view>
+        </view>
+      </view>
+      
+      <!-- Width (Hide for Text-Tag and Auto-Tag) -->
+      <view class="tool-section" wx:if="{{selectedLineType !== 'text-tag' && selectedLineType !== 'auto-tag'}}">
+        <text class="tool-label">粗细</text>
+        <view class="btn-circle" bindtap="onDecreaseWidth">-</view>
+        <view class="btn-circle" bindtap="onIncreaseWidth">+</view>
+      </view>
+
+      <!-- Background Color (Only for Text-Tag) -->
+      <view class="tool-section" wx:if="{{selectedLineType === 'text-tag'}}">
+        <text class="tool-label">背景</text>
+        <scroll-view scroll-x class="color-scroll-inline" enable-flex>
+          <view class="color-item" wx:for="{{bgColors}}" wx:key="*this" 
+                style="background-color: {{item}};" 
+                bindtap="onSelectBgColor" data-color="{{item}}"></view>
+        </scroll-view>
+      </view>
+
+      <!-- Background Opacity (Only for Text-Tag) -->
+      <view class="tool-section" wx:if="{{selectedLineType === 'text-tag'}}">
+        <text class="tool-label">透明</text>
+        <view class="btn-circle" bindtap="onDecreaseBgOpacity">-</view>
+        <text class="opacity-value">{{Math.round(bgOpacity * 100)}}%</text>
+        <view class="btn-circle" bindtap="onIncreaseBgOpacity">+</view>
+      </view>
+
+      <!-- Text Alignment (Only for Text-Tag) -->
+      <view class="tool-section" wx:if="{{selectedLineType === 'text-tag'}}">
+        <text class="tool-label">对齐</text>
+        <view class="align-toggle">
+          <view class="align-btn {{textAlign === 'left' ? 'active' : ''}}" bindtap="onSetTextAlign" data-align="left">左</view>
+          <view class="align-btn {{textAlign === 'center' ? 'active' : ''}}" bindtap="onSetTextAlign" data-align="center">中</view>
+          <view class="align-btn {{textAlign === 'right' ? 'active' : ''}}" bindtap="onSetTextAlign" data-align="right">右</view>
+        </view>
+      </view>
+      
+      <!-- Color (Text Color for Text-Tag, Line Color for others) -->
+      <!-- Show for standard, leader, text-tag (BUT NOT auto-tag) -->
+      <view class="tool-section-full" wx:if="{{selectedLineType !== 'auto-tag'}}">
+        <text class="tool-label">{{selectedLineType === 'text-tag' ? '文字' : '颜色'}}</text>
+        <scroll-view scroll-x class="color-scroll" enable-flex>
+          <view class="color-item" wx:for="{{colors}}" wx:key="*this" 
+                style="background-color: {{item}};" 
+                bindtap="onSelectColor" data-color="{{item}}"></view>
+        </scroll-view>
+      </view>
+
+      <!-- Font Size -->
+      <view class="tool-section">
+        <text class="tool-label">字号</text>
+        <view class="btn-circle" bindtap="onDecreaseFontSize">-</view>
+        <view class="btn-circle" bindtap="onIncreaseFontSize">+</view>
+      </view>
+    </view>
+
+    <!-- Top Right Controls -->
+    <view class="top-controls">
+        <view class="btn-mini btn-layer {{!canMoveUp ? 'disabled' : ''}}" bindtap="onLayerUp">
+            <view class="icon-wrapper">
+                <image class="btn-icon-layer" src="/sort-descending.svg"></image>
+            </view>
+            <text class="btn-text">上移</text>
+        </view>
+        <view class="btn-mini btn-layer {{!canMoveDown ? 'disabled' : ''}}" bindtap="onLayerDown">
+             <view class="icon-wrapper">
+                <image class="btn-icon-layer" src="/sort-ascending.svg"></image>
+             </view>
+             <text class="btn-text">下移</text>
+        </view>
+        <view class="btn-mini btn-delete {{!hasSelection ? 'disabled' : ''}}" bindtap="onDeleteLine">
+             <view class="icon-wrapper">
+                <image class="btn-icon-delete" src="/垃圾桶2.svg"></image>
+             </view>
+             <text class="btn-text-delete">删除</text>
+        </view>
+        <view class="btn-mini btn-save-vertical" bindtap="onSaveImage">
+            <view class="icon-wrapper">
+                <image class="btn-icon-save" src="/保存.svg"></image>
+            </view>
+            <text class="btn-text-save">保存</text>
+        </view>
+    </view>
+
+  <!-- Hidden Canvas for Export -->
+  <canvas type="2d" id="exportCanvas" class="export-canvas" style="width:{{canvasWidth}}px; height:{{canvasHeight}}px; position:fixed; left:0; top:0; opacity:0; pointer-events:none; z-index:-1000;"></canvas>
+
+  <!-- Input Modal -->
+  <view class="modal-mask" wx:if="{{showInput}}">
+    <view class="modal-content">
+      <view class="modal-title">编辑标签</view>
+      <input class="modal-input" 
+             value="{{inputText}}" 
+             bindinput="onInputTextChange"
+             focus="{{showInput}}"
+             confirm-type="done"
+             bindconfirm="onInputConfirm"/>
+      <view class="modal-footer">
+        <button class="btn-cancel" bindtap="onInputCancel">取消</button>
+        <button class="btn-confirm" bindtap="onInputConfirm">确定</button>
+      </view>
+    </view>
+  </view>
+</view>
