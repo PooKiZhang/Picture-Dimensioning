@@ -1,0 +1,160 @@
+<view class="container">
+  <!-- 自定义导航栏 -->
+  <view class="custom-navbar" style="padding-top: {{statusBarHeight}}px;">
+    <view class="navbar-content">
+      <view class="back-button" bindtap="onBackTap">
+        <text class="back-icon">‹</text>
+        <text class="back-text">返回</text>
+      </view>
+      <view class="navbar-title">熊猫爬竹子</view>
+      <view class="navbar-placeholder"></view>
+    </view>
+  </view>
+
+  <!-- GameBoy 容器 -->
+  <view class="gameboy-container">
+    <!-- GameBoy 机身 -->
+    <view class="gameboy-body">
+    
+    <!-- 顶部装饰线条 -->
+    <view class="decor-lines">
+      <view class="line"></view>
+      <view class="line"></view>
+    </view>
+
+    <!-- 屏幕区域 -->
+    <view class="screen-casing">
+      <view class="screen-label">
+        <text class="label-top">DOT MATRIX WITH STEREO SOUND</text>
+        <!-- 电源灯 -->
+        <view class="power-led {{gameState === 'PLAYING' ? 'on' : ''}}"></view>
+        <text class="label-battery">BATTERY</text>
+      </view>
+      
+      <!-- 真正的游戏画面 Canvas -->
+      <view class="lcd-display">
+        <canvas type="2d" id="gameCanvas" class="game-canvas"></canvas>
+        
+        <!-- 游戏中的分数显示 -->
+        <view class="in-game-ui" wx:if="{{gameState === 'PLAYING'}}">
+            <text class="pixel-font">分数:{{score}}</text>
+            <text class="pixel-font">{{healthDisplay}}</text>
+        </view>
+        
+        <!-- 开始界面 -->
+        <view class="ui-layer" wx:if="{{gameState === 'MENU'}}">
+          <text class="pixel-font title">熊猫爬竹子</text>
+          <text class="pixel-font" style="font-size: 28rpx; margin-bottom: 20rpx;">躲避虫子 消灭虫子</text>
+          <text class="pixel-font blink">点击 START 开始游戏</text>
+        </view>
+        
+        <!-- 游戏结束界面 -->
+        <view class="ui-layer" wx:if="{{gameState === 'GAMEOVER'}}">
+          <text class="pixel-font title">游戏结束</text>
+          <text class="pixel-font" style="font-size: 36rpx; margin-bottom: 20rpx;">得分: {{score}}</text>
+          <text class="pixel-font blink">点击 START 重新开始</text>
+        </view>
+
+        <!-- 暂停界面 -->
+        <view class="ui-layer" wx:if="{{gameState === 'PAUSED'}}">
+          <text class="pixel-font title">PAUSED</text>
+          
+          <!-- 4个动物图标横排 -->
+          <view class="animals-row">
+            <view class="animal-item {{selectedIndex === 0 ? 'selected' : ''}}">
+              <text class="animal-emoji">🐼</text>
+            </view>
+            <view class="animal-item {{selectedIndex === 1 ? 'selected' : ''}}">
+              <text class="animal-emoji">🦘</text>
+            </view>
+            <view class="animal-item {{selectedIndex === 2 ? 'selected' : ''}}">
+              <text class="animal-emoji">🦥</text>
+            </view>
+            <view class="animal-item {{selectedIndex === 3 ? 'selected' : ''}}">
+              <text class="animal-emoji">🐒</text>
+            </view>
+          </view>
+
+          <view class="hints-row">
+            <text class="pixel-font" style="font-size: 24rpx;">← → 移动选择</text>
+            <text class="pixel-font" style="font-size: 24rpx;">A 确认选择</text>
+          </view>
+          <text class="pixel-font blink" style="margin-top: 5rpx;">START 继续游戏</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Nintendo Logo -->
+    <view class="brand-logo">
+      <text class="nintendo">Nintendo</text>
+      <text class="gameboy">GAME BOY</text>
+      <text class="tm">TM</text>
+    </view>
+
+    <!-- 控制区域 -->
+    <view class="controls">
+      <!-- 方向键 (D-Pad) -->
+      <view class="d-pad">
+        <view class="d-pad-h">
+            <view class="key left" 
+                  bindtouchstart="handleDPadPress" 
+                  bindtouchend="handleDPadRelease" 
+                  data-key="left"></view>
+            <view class="key right" 
+                  bindtouchstart="handleDPadPress" 
+                  bindtouchend="handleDPadRelease" 
+                  data-key="right"></view>
+        </view>
+        <view class="d-pad-v">
+            <view class="key up" 
+                  bindtouchstart="handleDPadPress" 
+                  bindtouchend="handleDPadRelease" 
+                  data-key="up"></view>
+            <view class="key down" 
+                  bindtouchstart="handleDPadPress" 
+                  bindtouchend="handleDPadRelease" 
+                  data-key="down"></view>
+        </view>
+        <view class="d-pad-center"></view>
+      </view>
+
+      <!-- A/B 按钮 -->
+      <view class="action-btns">
+        <view class="btn-wrapper">
+          <view class="round-btn b-btn" bindtap="handleInput" data-key="b"></view>
+          <text>B (拉屎)</text>
+        </view>
+        <view class="btn-wrapper">
+          <view class="round-btn a-btn" 
+                bindtouchstart="handleAPress" 
+                bindtouchend="handleARelease"></view>
+          <text>A (下滑)</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Select / Start -->
+    <view class="function-btns">
+      <view class="pill-btn-wrapper" bindtap="handleInput" data-key="select">
+        <view class="pill-btn"></view>
+        <text>SELECT</text>
+      </view>
+      <view class="pill-btn-wrapper" bindtap="handleInput" data-key="start">
+        <view class="pill-btn"></view>
+        <text>START</text>
+      </view>
+    </view>
+
+    <!-- 扬声器孔 -->
+    <view class="speaker">
+      <view class="slot"></view>
+      <view class="slot"></view>
+      <view class="slot"></view>
+      <view class="slot"></view>
+      <view class="slot"></view>
+      <view class="slot"></view>
+    </view>
+
+  </view>
+  </view>
+</view>

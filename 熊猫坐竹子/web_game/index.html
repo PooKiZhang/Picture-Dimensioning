@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panda Bamboo Climber - GameBoy Color Edition</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="background-decor"></div>
+    
+    <div class="gameboy">
+        <div class="power-led"></div>
+        <div class="screen-area">
+            <div class="screen-cover">
+                <div class="screen-headline">
+                    <span class="dot-matrix-text">DOT MATRIX WITH STEREO SOUND</span>
+                </div>
+                <!-- The actual colorful LCD screen -->
+                <div class="lcd-screen">
+                    <canvas id="gameCanvas" width="320" height="288"></canvas>
+                    <div id="ui-overlay">
+                        <div id="score-display">SCORE: 0</div>
+                        <div id="health-display">♥♥♥</div>
+                        <div id="start-screen" class="active">
+                            <h1>PANDA<br>CLIMB</h1>
+                            <p>PRESS START</p>
+                        </div>
+                        <div id="game-over-screen">
+                            <h1>GAME OVER</h1>
+                            <p>SCORE: <span id="final-score"></span></p>
+                            <p>PRESS START</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="brand">Nintendo <span class="gameboy-text">GAME BOY</span> <span class="tm">TM</span></div>
+            </div>
+        </div>
+
+        <div class="controls-area">
+            <div class="d-pad">
+                <div class="d-pad-up" data-key="ArrowUp"></div>
+                <div class="d-pad-right" data-key="ArrowRight"></div>
+                <div class="d-pad-down" data-key="ArrowDown"></div>
+                <div class="d-pad-left" data-key="ArrowLeft"></div>
+                <div class="d-pad-center"></div>
+            </div>
+
+            <div class="action-buttons">
+                <div class="button-group">
+                    <div class="button-b" data-key="KeyZ"></div>
+                    <label>B</label>
+                </div>
+                <div class="button-group">
+                    <div class="button-a" data-key="KeyX"></div>
+                    <label>A (Slide)</label>
+                </div>
+            </div>
+
+            <div class="utility-buttons">
+                <div class="btn-select" data-key="Shift">
+                    <div class="capsule-btn"></div>
+                    <label>SELECT</label>
+                </div>
+                <div class="btn-start" data-key="Enter">
+                    <div class="capsule-btn"></div>
+                    <label>START</label>
+                </div>
+            </div>
+            
+            <div class="speaker-grill">
+                <div class="slot"></div>
+                <div class="slot"></div>
+                <div class="slot"></div>
+                <div class="slot"></div>
+                <div class="slot"></div>
+                <div class="slot"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>

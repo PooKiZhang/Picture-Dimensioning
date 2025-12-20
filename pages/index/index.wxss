@@ -8,7 +8,7 @@ page {
 }
 
 .container {
-  width: 100vw;
+  width: 100%;
   height: 100vh;
   position: relative;
   overflow: hidden;
@@ -20,10 +20,11 @@ page {
   width: 100%;
   height: 100%;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: flex-start;
   align-items: center;
   background-color: #f5f7fa;
-  padding: 16px;
+  padding: 100px 16px 16px 16px;
   box-sizing: border-box;
 }
 
@@ -37,6 +38,7 @@ page {
   flex-direction: column;
   align-items: center;
   box-shadow: 0 20px 60px rgba(0,0,0,0.05);
+  box-sizing: border-box;
 }
 
 .home-title {
@@ -51,6 +53,39 @@ page {
   color: #64748b;
   margin-bottom: 28px;
   text-align: center;
+}
+
+/* 游戏入口 */
+.game-entry {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 20px;
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+  border-radius: 20px;
+  margin-top: 20px;
+  width: 100%;
+  max-width: 600px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(168, 237, 234, 0.3);
+  box-sizing: border-box;
+}
+
+.game-entry:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 8px rgba(168, 237, 234, 0.4);
+}
+
+.game-icon {
+  width: 32px;
+  height: 32px;
+}
+
+.game-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
 }
 
 .home-buttons {

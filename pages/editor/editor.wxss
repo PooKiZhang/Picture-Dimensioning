@@ -596,6 +596,7 @@ Let's just copy the workspace styles.
   position: absolute;
   transform-origin: 0 50%;
   pointer-events: auto;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
 }
 
 .leader-text-wrapper {
@@ -612,6 +613,9 @@ Let's just copy the workspace styles.
   padding: 2px 6px;
   border-radius: 4px;
   font-weight: 700;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  border: 1px solid rgba(0,0,0,0.05);
+  transition: all 0.2s ease;
 }
 
 .leader-anchor-dot {
@@ -620,7 +624,7 @@ Let's just copy the workspace styles.
   background-color: rgb(255 255 255 / 1);
   transform: translate(-50%, -50%);
   pointer-events: auto;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.5);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
 }
 
 /* Updated UI Overlay */

@@ -1,0 +1,404 @@
+:root {
+    --gb-body: #c0c0c0;
+    --gb-body-shadow: #9ca0a3;
+    --gb-screen-bezel: #555566;
+    --gb-screen-bg: #8bac0f;
+    /* Classic, but we will use color canvas */
+    --gb-btn-a: #a91636;
+    --gb-btn-b: #a91636;
+    --gb-dpad: #222;
+    --gb-select-start: #666;
+    --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+}
+
+* {
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: var(--bg-gradient);
+    font-family: 'Roboto', sans-serif;
+    overflow: hidden;
+}
+
+.background-decor {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+}
+
+.gameboy {
+    position: relative;
+    width: 360px;
+    height: 600px;
+    background: var(--gb-body);
+    border-radius: 20px 20px 50px 20px;
+    box-shadow:
+        inset 5px 5px 15px rgba(255, 255, 255, 0.5),
+        inset -5px -5px 15px rgba(0, 0, 0, 0.2),
+        10px 20px 30px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 30px;
+}
+
+.power-led {
+    position: absolute;
+    top: 110px;
+    left: 20px;
+    width: 8px;
+    height: 8px;
+    background: #555;
+    border-radius: 50%;
+    z-index: 10;
+    box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.power-led.on {
+    background: #f00;
+    box-shadow: 0 0 5px #f00;
+}
+
+.screen-area {
+    width: 320px;
+    height: 260px;
+    background: var(--gb-screen-bezel);
+    border-radius: 15px 15px 40px 15px;
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: center;
+    padding-top: 30px;
+    position: relative;
+}
+
+.screen-headline {
+    position: absolute;
+    top: 8px;
+    width: 100%;
+    text-align: center;
+    color: #b3b3cc;
+    font-size: 10px;
+    border-top: 1px solid #444;
+    border-bottom: 1px solid #444;
+    padding: 2px 0;
+    width: 90%;
+    left: 5%;
+}
+
+.dot-matrix-text {
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    font-style: italic;
+}
+
+.lcd-screen {
+    width: 240px;
+    /* Physical screen size approximation */
+    height: 210px;
+    background: #000;
+    border: 3px solid #444;
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.lcd-screen::after {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    z-index: 2;
+    background-size: 100% 2px, 3px 100%;
+    pointer-events: none;
+}
+
+/* We scale the 320x288 canvas to fit the CSS size */
+canvas {
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+    /* Crucial for retro look */
+    background: #87CEEB;
+    /* Sky blue default */
+}
+
+#ui-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    font-family: 'Press Start 2P', cursive;
+    color: white;
+}
+
+#score-display {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    font-size: 10px;
+    text-shadow: 1px 1px 0 #000;
+}
+
+#health-display {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 10px;
+    color: #fa5c5c;
+    text-shadow: 1px 1px 0 #000;
+}
+
+#start-screen,
+#game-over-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    display: none;
+}
+
+#start-screen.active,
+#game-over-screen.active {
+    display: flex;
+}
+
+h1 {
+    font-size: 20px;
+    color: #ffff00;
+    text-shadow: 2px 2px 0 #ff0000;
+    line-height: 1.5;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+p {
+    font-size: 10px;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+}
+
+.brand {
+    position: absolute;
+    bottom: 10px;
+    left: 15px;
+    color: #b3b3cc;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    font-size: 14px;
+    font-style: italic;
+}
+
+.gameboy-text {
+    font-size: 16px;
+    margin-right: 2px;
+}
+
+.tm {
+    font-size: 8px;
+    vertical-align: top;
+}
+
+.controls-area {
+    width: 100%;
+    flex: 1;
+    position: relative;
+    margin-top: 20px;
+}
+
+.d-pad {
+    position: absolute;
+    top: 40px;
+    left: 30px;
+    width: 90px;
+    height: 90px;
+}
+
+.d-pad div {
+    background: var(--gb-dpad);
+    position: absolute;
+    border-radius: 3px;
+    box-shadow:
+        inset 1px 1px 3px rgba(255, 255, 255, 0.2),
+        2px 2px 5px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+}
+
+.d-pad div:active,
+.d-pad div.active {
+    transform: scale(0.95);
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.d-pad-center {
+    top: 30px;
+    left: 30px;
+    width: 30px;
+    height: 30px;
+    z-index: 2;
+}
+
+.d-pad-up {
+    top: 0;
+    left: 30px;
+    width: 30px;
+    height: 30px;
+}
+
+.d-pad-down {
+    bottom: 0;
+    left: 30px;
+    width: 30px;
+    height: 30px;
+}
+
+.d-pad-left {
+    top: 30px;
+    left: 0;
+    width: 30px;
+    height: 30px;
+}
+
+.d-pad-right {
+    top: 30px;
+    right: 0;
+    width: 30px;
+    height: 30px;
+}
+
+.action-buttons {
+    position: absolute;
+    top: 50px;
+    right: 20px;
+    display: flex;
+    gap: 15px;
+    transform: rotate(-25deg);
+}
+
+.button-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.button-a,
+.button-b {
+    width: 40px;
+    height: 40px;
+    background: var(--gb-btn-a);
+    border-radius: 50%;
+    box-shadow:
+        inset -2px -2px 5px rgba(0, 0, 0, 0.2),
+        2px 2px 5px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    margin-bottom: 5px;
+}
+
+.button-a:active,
+.button-a.active,
+.button-b:active,
+.button-b.active {
+    transform: scale(0.95);
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.button-group label {
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    color: #666;
+    font-size: 12px;
+}
+
+.utility-buttons {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 30px;
+}
+
+.btn-select,
+.btn-start {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform: rotate(-25deg);
+    cursor: pointer;
+}
+
+.capsule-btn {
+    width: 50px;
+    height: 12px;
+    background: var(--gb-select-start);
+    border-radius: 10px;
+    box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.3);
+    margin-bottom: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.btn-select:active .capsule-btn,
+.btn-start:active .capsule-btn,
+.btn-select.active .capsule-btn,
+.btn-start.active .capsule-btn {
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.utility-buttons label {
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    font-weight: bold;
+    color: #666;
+    letter-spacing: 1px;
+}
+
+.speaker-grill {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    transform: rotate(-25deg);
+}
+
+.slot {
+    width: 60px;
+    height: 4px;
+    background: rgba(0, 0, 0, 0.1);
+    margin-bottom: 4px;
+    border-radius: 2px;
+    box-shadow: inset 1px 1px 1px rgba(0, 0, 0, 0.2);
+}

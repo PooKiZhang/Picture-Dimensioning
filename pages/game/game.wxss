@@ -1,0 +1,893 @@
+page {
+  height: 100%;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+/* 自定义导航栏 */
+.custom-navbar {
+  width: 100%;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.navbar-content {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  transition: all 0.2s ease;
+}
+
+.back-button:active {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(0.95);
+}
+
+.back-icon {
+  font-size: 28px;
+  font-weight: bold;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.back-text {
+  font-size: 14px;
+  color: #ffffff;
+  font-weight: 500;
+}
+
+.navbar-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.navbar-placeholder {
+  width: 80px;
+}
+
+/* GameBoy容器调整 */
+.gameboy-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20rpx;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden; /* 防止横向滚动 */
+  width: 100%;
+}
+
+/* ========================================
+   GameBoy 机身 - 主要尺寸控制
+   ======================================== */
+.gameboy-body {
+  /* 机身宽度 - 使用百分比确保不超出屏幕 */
+  width: 100%;
+  max-width: 680rpx; /* 最大宽度，确保在750rpx屏幕上有足够边距 */
+  
+  /* 机身高度 - 调整此值会影响整个游戏机的高度 
+     建议比例：高度约为宽度的 1.7 倍 */
+  height: 1200rpx;
+  
+  /* 机身颜色 - GameBoy 经典灰色 */
+  background-color: #c0c0c0;
+  
+  /* 圆角 - 右下角更圆润 */
+  border-radius: 20rpx 20rpx 100rpx 20rpx;
+  
+  position: relative;
+  
+  /* 3D 效果阴影 */
+  box-shadow: 
+    inset 4rpx 4rpx 10rpx rgba(255,255,255,0.8),
+    inset -6rpx -6rpx 20rpx rgba(0,0,0,0.2),
+    0 20rpx 40rpx rgba(0,0,0,0.6);
+  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* 顶部装饰线条 */
+.decor-lines {
+  width: 100%;
+  height: 40rpx;
+  border-bottom: 2rpx solid rgba(0,0,0,0.1);
+  margin-bottom: 20rpx;
+  position: relative;
+}
+.line {
+  position: absolute;
+  width: 100%;
+  height: 2rpx;
+  background-color: rgba(0,0,0,0.05);
+}
+.line:first-child { top: 10rpx; }
+.line:last-child { top: 20rpx; }
+
+/* ========================================
+   屏幕区域 - 游戏画面尺寸控制
+   ======================================== */
+
+/* 屏幕外壳 - 深灰色边框 */
+.screen-casing {
+  /* 屏幕外壳宽度 - 约为机身宽度的 85% */
+  width: 600rpx;
+  
+  /* 屏幕外壳高度 */
+  height: 480rpx;
+  
+  background-color: #777788;
+  border-radius: 20rpx 20rpx 80rpx 20rpx;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 20rpx;
+  box-shadow: inset 4rpx 4rpx 10rpx rgba(0,0,0,0.3);
+}
+
+.screen-label {
+  width: 90%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10rpx;
+  position: relative;
+}
+
+.label-top {
+  color: #b0b0c0;
+  font-size: 16rpx;
+  font-weight: bold;
+  border-top: 2rpx solid #333;
+  border-bottom: 2rpx solid #333;
+  padding: 2rpx 10rpx;
+  flex: 1;
+  text-align: center;
+  margin-right: 20rpx;
+}
+
+.power-led {
+  width: 12rpx;
+  height: 12rpx;
+  background-color: #660000;
+  border-radius: 50%;
+  transition: all 0.3s;
+}
+
+.power-led.on {
+  background-color: #cc0000;
+  box-shadow: 0 0 10rpx #ff0000;
+}
+
+.label-battery {
+  color: #b0b0c0;
+  font-size: 12rpx;
+  margin-left: 8rpx;
+}
+
+/* LCD 显示屏 - 游戏画面区域 
+   ⚠️ 重要：修改此尺寸后，需要同步修改 game.js 中的 CONFIG.LOGICAL_WIDTH 和 CONFIG.LOGICAL_HEIGHT */
+.lcd-display {
+  /* 游戏画面宽度 - 这是最重要的尺寸！
+     修改后需要同步更新 game.js 中的 LOGICAL_WIDTH */
+  width: 530rpx;
+  
+  /* 游戏画面高度 
+     修改后需要同步更新 game.js 中的 LOGICAL_HEIGHT */
+  height: 400rpx;
+  
+  /* GameBoy 经典绿色屏幕 */
+  background-color: #9bbc0f;
+  
+  border: 4rpx solid #4a4a5a;
+  box-shadow: inset 4rpx 4rpx 10rpx rgba(0,0,0,0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.game-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* UI 覆盖层 */
+.ui-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.75);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20rpx;
+  color: #ffff00;
+  font-family: monospace;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.in-game-ui {
+  position: absolute;
+  top: 10rpx;
+  left: 0;
+  right: 0;
+  padding: 0 15rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  pointer-events: none;
+  z-index: 5;
+  box-sizing: border-box;
+}
+
+.pixel-font {
+  font-weight: bold;
+  text-shadow: 3rpx 3rpx 0 #000, -1rpx -1rpx 0 #000, 1rpx -1rpx 0 #000, -1rpx 1rpx 0 #000;
+  color: white;
+  font-size: 22rpx;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: 56rpx;
+  line-height: 1.4;
+  text-align: center;
+  margin-bottom: 5rpx; /* 减少间距：40rpx → 15rpx */
+  white-space: pre;
+  color: #ffff00;
+  text-shadow: 4rpx 4rpx 0 #ff0000, -2rpx -2rpx 0 #000;
+  font-weight: bold;
+}
+
+.blink {
+  font-size: 32rpx;
+  color: #ffffff;
+  text-shadow: 2rpx 2rpx 0 #000;
+  animation: blink 1s infinite step-end;
+  font-weight: bold;
+}
+
+@keyframes blink { 
+  50% { opacity: 0; } 
+}
+
+/* 暂停界面 - 动物选择 */
+.animals-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20rpx;
+  margin: 3rpx 0;
+}
+
+.animal-item {
+  width: 100rpx;
+  height: 100rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  border: 3rpx solid transparent;
+  border-radius: 10rpx;
+  transition: all 0.3s ease;
+}
+
+.animal-item.selected {
+  background: rgba(255, 255, 0, 0.3);
+  border-color: #ffff00;
+  box-shadow: 0 0 20rpx rgba(255, 255, 0, 0.8);
+  transform: scale(1.2);
+}
+
+.animal-emoji {
+  font-size: 60rpx;
+  line-height: 1;
+}
+
+/* 提示文字横排 */
+.hints-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20rpx;
+  margin-top: 5rpx;
+}
+
+/* Logo */
+.brand-logo {
+  width: 100%;
+  padding-left: 60rpx;
+  margin-top: 10rpx;
+  margin-bottom: 20rpx;
+  color: #303080;
+  font-style: italic;
+  font-weight: bold;
+}
+.nintendo { 
+  font-size: 18rpx; 
+  display: block; 
+  margin-bottom: 4rpx;
+}
+.gameboy { 
+  font-size: 36rpx; 
+  display: inline-block; 
+  margin-right: 4rpx;
+}
+.tm { 
+  font-size: 14rpx; 
+  vertical-align: top; 
+}
+
+/* ========================================
+   控制区 - 按钮布局控制
+   ======================================== */
+.controls {
+  width: 90%;
+  
+  /* 控制区高度 - 包含所有按钮的区域 */
+  height: 280rpx;
+  
+  position: relative;
+  margin-top: 20rpx;
+}
+
+/* ========================================
+   方向键 (D-Pad) - 十字键尺寸控制
+   当前已放大 1.3 倍
+   ======================================== */
+.d-pad {
+  position: absolute;
+  
+  /* 方向键左边距 - 控制方向键的水平位置 */
+  left: 0rpx;
+  
+  /* 方向键上边距 - 控制方向键的垂直位置 */
+  top: 20rpx;
+  
+  /* 方向键整体尺寸 - 修改此值会同时影响宽度和高度 
+     原始尺寸 180rpx，当前 234rpx (1.3倍) */
+  width: 234rpx;
+  height: 234rpx;
+}
+
+.d-pad-h {
+  position: absolute;
+  top: 78rpx;  /* 60 * 1.3 */
+  left: 0;
+  width: 234rpx;  /* 180 * 1.3 */
+  height: 78rpx;  /* 60 * 1.3 */
+  background-color: #222;
+  border-radius: 8rpx;
+  box-shadow: 2rpx 6rpx 0 rgba(0,0,0,0.4);
+  z-index: 1;
+}
+
+.d-pad-v {
+  position: absolute;
+  left: 78rpx;  /* 60 * 1.3 */
+  top: 0;
+  width: 78rpx;   /* 60 * 1.3 */
+  height: 234rpx; /* 180 * 1.3 */
+  background-color: #222;
+  border-radius: 8rpx;
+  box-shadow: 2rpx 6rpx 0 rgba(0,0,0,0.4);
+  z-index: 1;
+}
+
+.d-pad-center {
+  position: absolute;
+  left: 78rpx;  /* 60 * 1.3 */
+  top: 78rpx;   /* 60 * 1.3 */
+  width: 78rpx;  /* 60 * 1.3 */
+  height: 78rpx; /* 60 * 1.3 */
+  background-color: #222;
+  z-index: 2;
+}
+
+.d-pad-center::after {
+  content: '';
+  position: absolute;
+  width: 52rpx;  /* 40 * 1.3 */
+  height: 52rpx; /* 40 * 1.3 */
+  top: 13rpx;    /* 10 * 1.3 */
+  left: 13rpx;   /* 10 * 1.3 */
+  background: radial-gradient(circle, #111 20%, #333 80%);
+  border-radius: 50%;
+  opacity: 0.5;
+}
+
+/* 感应区 */
+.key {
+  position: absolute;
+  width: 78rpx;  /* 60 * 1.3 */
+  height: 78rpx; /* 60 * 1.3 */
+  z-index: 10;
+}
+.key.left { left: 0; }
+.key.right { right: 0; }
+.key.up { top: 0; }
+.key.down { bottom: 0; }
+.key:active {
+  background-color: rgba(255,255,255,0.1);
+}
+
+/* ========================================
+   A/B 按钮 - 动作按钮尺寸控制
+   当前已放大 1.3 倍
+   ======================================== */
+.action-btns {
+  position: absolute;
+  
+  /* A/B 按钮右边距 - 控制按钮组的水平位置 */
+  right: 10rpx;
+  
+  /* A/B 按钮上边距 - 控制按钮组的垂直位置 */
+  top: 60rpx;
+  
+  display: flex;
+  
+  /* 两个按钮之间的间距 
+     原始 40rpx，当前 52rpx (1.3倍) */
+  gap: 52rpx;
+  
+  /* 按钮组旋转角度 - 模拟 GameBoy 的倾斜设计 */
+  transform: rotate(-15deg);
+}
+
+.btn-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.btn-wrapper text {
+  font-weight: bold;
+  color: #303080;
+  
+  /* 按钮文字上边距 */
+  margin-top: 13rpx;
+  
+  /* 按钮文字大小 
+     原始 24rpx，当前 31rpx (1.3倍) */
+  font-size: 31rpx;
+}
+
+.round-btn {
+  /* 圆形按钮直径 
+     原始 88rpx，当前 114rpx (1.3倍) */
+  width: 114rpx;
+  height: 114rpx;
+  
+  border-radius: 50%;
+  
+  /* 按钮颜色 - GameBoy 经典红色 */
+  background-color: #a91636;
+  
+  box-shadow: 
+    inset -4rpx -6rpx 10rpx rgba(0,0,0,0.3),
+    4rpx 6rpx 10rpx rgba(0,0,0,0.4);
+  transition: all 0.1s;
+}
+
+.round-btn:active,
+.round-btn.active {
+  transform: scale(0.92);
+  box-shadow: inset 4rpx 6rpx 10rpx rgba(0,0,0,0.5);
+  background-color: #8a1028;
+}
+
+/* ========================================
+   SELECT/START 功能键 - 椭圆按钮尺寸控制
+   当前已放大 1.3 倍
+   ======================================== */
+.function-btns {
+  /* 功能键容器宽度 
+     原始 300rpx，当前 390rpx (1.3倍) */
+  width: 390rpx;
+  
+  /* 功能键上边距 - 控制按钮组的垂直位置 */
+  margin-top: 60rpx;
+  
+  display: flex;
+  justify-content: center;
+  
+  /* 两个按钮之间的间距 
+     原始 40rpx，当前 52rpx (1.3倍) */
+  gap: 52rpx;
+}
+
+.pill-btn-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+  /* 按钮组旋转角度 */
+  transform: rotate(-15deg);
+}
+
+.pill-btn-wrapper text {
+  /* 按钮文字大小 
+     原始 20rpx，当前 26rpx (1.3倍) */
+  font-size: 26rpx;
+  
+  font-weight: bold;
+  color: #303080;
+  
+  /* 按钮文字上边距 */
+  margin-top: 8rpx;
+  
+  letter-spacing: 2rpx;
+}
+
+.pill-btn {
+  /* 椭圆按钮宽度 
+     原始 100rpx，当前 130rpx (1.3倍) */
+  width: 130rpx;
+  
+  /* 椭圆按钮高度 
+     原始 24rpx，当前 31rpx (1.3倍) */
+  height: 31rpx;
+  
+  background-color: #999;
+  
+  /* 圆角半径 - 使按钮呈椭圆形 
+     原始 12rpx，当前 16rpx (1.3倍) */
+  border-radius: 16rpx;
+  
+  box-shadow: 
+    inset 2rpx 2rpx 4rpx rgba(0,0,0,0.4),
+    2rpx 2rpx 4rpx rgba(255,255,255,0.5);
+  border: 1px solid rgba(0,0,0,0.1);
+}
+
+.pill-btn-wrapper:active .pill-btn {
+  background-color: #888;
+}
+
+/* 扬声器 */
+.speaker {
+  position: absolute;
+  bottom: 40rpx;
+  right: 40rpx;
+  transform: rotate(-15deg);
+}
+
+.slot {
+  width: 100rpx;
+  height: 10rpx;
+  background-color: rgba(0,0,0,0.15);
+  margin-bottom: 8rpx;
+  border-radius: 6rpx;
+  box-shadow: inset 2rpx 2rpx 2rpx rgba(0,0,0,0.2);
+}
+
+/* ========================================
+   暂停界面 - 动物选择器（像素风格增强版）
+   ======================================== */
+
+/* 暂停界面整体样式优化 */
+.ui-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.85) 0px,
+      rgba(0, 0, 0, 0.85) 2px,
+      rgba(0, 0, 0, 0.75) 2px,
+      rgba(0, 0, 0, 0.75) 4px
+    ); /* 扫描线效果 */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10rpx; /* 减少间距：20rpx → 10rpx */
+  color: #ffff00;
+  font-family: monospace;
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* 暂停界面特殊样式 - 稍微靠上显示 */
+.pause-layer {
+  align-items: flex-start; /* 从顶部开始对齐 */
+  padding-top: 80rpx; /* 顶部留出空间 */
+}
+
+.pause-title {
+  font-size: 72rpx !important;
+  color: #9bbc0f !important;
+  font-weight: bold !important;
+  text-align: center;
+  margin-bottom: 20rpx; /* 减少：40rpx → 20rpx */
+  text-shadow: 
+    6rpx 6rpx 0 #0f380f,
+    -3rpx -3rpx 0 #000,
+    3rpx -3rpx 0 #000,
+    -3rpx 3rpx 0 #000,
+    0 0 30rpx #9bbc0f !important;
+  letter-spacing: 8rpx;
+  z-index: 1000;
+  position: relative;
+}
+
+/* 提示文字样式 */
+.hint-text {
+  font-size: 24rpx;
+  margin-top: 8rpx; /* 减少：15rpx → 8rpx */
+}
+
+/* 动物选择器容器 - 无边框版本 */
+.animal-selector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 30rpx; /* 保持不变 */
+  margin: 15rpx 0; /* 减少：30rpx → 15rpx */
+  padding: 20rpx 30rpx; /* 减少：30rpx 40rpx → 20rpx 30rpx */
+  position: relative;
+  background: transparent; /* 完全透明 */
+}
+
+/* 移除装饰角 */
+.animal-selector::before,
+.animal-selector::after {
+  display: none;
+}
+
+/* 箭头 - 像素风格 */
+.arrow {
+  font-size: 60rpx;
+  color: #9bbc0f;
+  font-weight: bold;
+  text-shadow: 
+    4rpx 4rpx 0 #0f380f,
+    -2rpx -2rpx 0 #000,
+    2rpx -2rpx 0 #000,
+    -2rpx 2rpx 0 #000,
+    0 0 20rpx #9bbc0f;
+  animation: arrowPulse 1.5s ease-in-out infinite;
+  filter: drop-shadow(0 0 10rpx #9bbc0f);
+}
+
+@keyframes arrowPulse {
+  0%, 100% { 
+    transform: scale(1) translateX(0); 
+    opacity: 1; 
+  }
+  50% { 
+    transform: scale(1.3) translateX(0); 
+    opacity: 0.7; 
+  }
+}
+
+/* 动物显示区域 - 移除背景和边框 */
+.animal-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20rpx;
+  min-width: 250rpx;
+  padding: 0; /* 移除padding */
+  background: transparent; /* 移除背景 */
+  position: relative;
+}
+
+/* 移除边框效果，避免遮挡动物 */
+.animal-display::before {
+  display: none;
+}
+
+@keyframes borderShine {
+  0% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+  100% { opacity: 0.3; }
+}
+
+/* ========================================
+   GameBoy风格像素艺术 - 使用真实的像素块
+   ======================================== */
+
+.pixel-animal-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 200rpx;
+  height: 200rpx;
+  background: transparent; /* 移除背景，避免遮挡 */
+  padding: 20rpx;
+  position: relative;
+  z-index: 10; /* 确保在最上层 */
+}
+
+/* 大图标像素艺术容器 */
+.gameboy-pixel-art {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.pixel-row {
+  display: flex;
+  gap: 8rpx;
+}
+
+/* 像素块 */
+.p {
+  width: 24rpx;
+  height: 24rpx;
+  background: #306230; /* GameBoy深绿色（空白） */
+  border-radius: 2rpx;
+  box-shadow: inset 1rpx 1rpx 2rpx rgba(0, 0, 0, 0.3);
+}
+
+.p.b {
+  background: #0f380f; /* GameBoy黑色（填充） */
+  box-shadow: 
+    inset 1rpx 1rpx 2rpx rgba(0, 0, 0, 0.5),
+    0 0 4rpx rgba(15, 56, 15, 0.5);
+}
+
+/* 动物名称 - 像素字体效果 */
+.animal-name {
+  font-size: 48rpx;
+  color: #9bbc0f;
+  font-weight: bold;
+  letter-spacing: 4rpx;
+  text-shadow: 
+    4rpx 4rpx 0 #0f380f,
+    -2rpx -2rpx 0 #000,
+    2rpx -2rpx 0 #000,
+    -2rpx 2rpx 0 #000;
+  animation: nameGlow 2s ease-in-out infinite;
+}
+
+@keyframes nameGlow {
+  0%, 100% { 
+    text-shadow: 
+      4rpx 4rpx 0 #0f380f,
+      -2rpx -2rpx 0 #000,
+      2rpx -2rpx 0 #000,
+      -2rpx 2rpx 0 #000,
+      0 0 10rpx #9bbc0f;
+  }
+  50% { 
+    text-shadow: 
+      4rpx 4rpx 0 #0f380f,
+      -2rpx -2rpx 0 #000,
+      2rpx -2rpx 0 #000,
+      -2rpx 2rpx 0 #000,
+      0 0 30rpx #9bbc0f,
+      0 0 50rpx #9bbc0f;
+  }
+}
+
+/* 提示文字增强 */
+.ui-layer .pixel-font {
+  animation: textFlicker 3s ease-in-out infinite;
+}
+
+@keyframes textFlicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+/* 闪烁文字增强 */
+.blink {
+  animation: blinkEnhanced 1.2s step-end infinite;
+  text-shadow: 
+    3rpx 3rpx 0 #000,
+    0 0 20rpx #9bbc0f,
+    0 0 40rpx #9bbc0f;
+}
+
+@keyframes blinkEnhanced { 
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; } 
+}
+
+/* ========================================
+   底部动物选择栏
+   ======================================== */
+
+.animal-selector-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12rpx; /* 减少：15rpx → 12rpx */
+  margin-top: 10rpx; /* 减少：30rpx → 15rpx */
+  padding: 10rpx 15rpx; /* 减少：15rpx 20rpx → 10rpx 15rpx */
+  background: rgba(15, 56, 15, 0.8);
+  border-radius: 10rpx;
+  border: 2rpx solid rgba(155, 188, 15, 0.5);
+}
+
+.small-animal-icon {
+  width: 80rpx;
+  height: 80rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(48, 98, 48, 0.3);
+  border: 3rpx solid rgba(155, 188, 15, 0.3);
+  border-radius: 8rpx;
+  transition: all 0.3s ease;
+  opacity: 0.4;
+  padding: 8rpx;
+}
+
+.small-animal-icon.active {
+  opacity: 1;
+  background: rgba(48, 98, 48, 0.6);
+  border-color: #9bbc0f;
+  box-shadow: 
+    0 0 15rpx rgba(155, 188, 15, 0.8),
+    inset 0 0 10rpx rgba(155, 188, 15, 0.3);
+  transform: scale(1.15);
+}
+
+/* 小图标像素艺术 */
+.small-gameboy-pixel {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.s-row {
+  display: flex;
+  gap: 4rpx;
+}
+
+.s {
+  width: 10rpx;
+  height: 10rpx;
+  background: #306230;
+  border-radius: 1rpx;
+}
+
+.s.b {
+  background: #0f380f;
+  box-shadow: 0 0 2rpx rgba(15, 56, 15, 0.5);
+}

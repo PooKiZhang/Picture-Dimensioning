@@ -21,6 +21,12 @@
         </view>
       </view>
     </view>
+
+    <!-- 游戏入口 -->
+    <view class="game-entry" bindtap="onGameTap">
+      <image class="game-icon" src="/panda_game_icon.png" mode="aspectFit"></image>
+      <text class="game-text">熊猫爬竹竿</text>
+    </view>
   </view>
 
 </view>

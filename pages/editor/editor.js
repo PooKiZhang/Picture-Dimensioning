@@ -684,6 +684,8 @@ Page({
                 }
 
                 // --- 端点吸附逻辑 (不适用于text-tag) ---
+                // 已禁用：去掉垂直和水平吸附功能
+                /*
                 if (l.type !== 'text-tag') {
                     const dx = bx - ax
                     const dy = by - ay
@@ -713,6 +715,7 @@ Page({
                         this.dragState.wasAligned = false
                     }
                 }
+                */
 
                 let visuals = {}
                 if (l.type === 'leader') {

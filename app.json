@@ -2,6 +2,7 @@
   "pages": [
     "pages/index/index",
     "pages/editor/editor",
+    "pages/game/game",
     "pages/logs/logs"
   ],
   "window": {

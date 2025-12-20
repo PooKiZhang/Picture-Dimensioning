@@ -16,6 +16,12 @@ Page({
     this._chooseImage(['album'])
   },
 
+  onGameTap() {
+    wx.navigateTo({
+      url: '/pages/game/game'
+    })
+  },
+
   _chooseImage(sourceType) {
     wx.chooseMedia({
       count: 1,
